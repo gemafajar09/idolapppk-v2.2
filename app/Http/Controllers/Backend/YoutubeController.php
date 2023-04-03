@@ -26,7 +26,7 @@ class YoutubeController extends Controller
      */
     public function create()
     {
-        //
+        return view('backend.youtube.add');
     }
 
     /**
@@ -37,7 +37,17 @@ class YoutubeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $link = $request->link;
+        $lokasi = $request->lokasi;
+        $insert = Youtube::insert([
+            "link"=>$link,
+            "lokasi"=>$lokasi
+        ]);
+        if($insert){
+            return redirect()->route('youtube.index')->with('success', 'Berhasil Menambahkan youtube');
+        }else{
+            return redirect()->route('youtube.create')->with('error', 'Gagal Menambahkan youtube');
+        }
     }
 
     /**
@@ -48,7 +58,7 @@ class YoutubeController extends Controller
      */
     public function show($id)
     {
-       
+
     }
 
     /**
@@ -81,6 +91,7 @@ class YoutubeController extends Controller
             return redirect()->back()->with('error', 'Gagal Edit');
         }
         $youtube = Youtube::find($id);
+        $youtube->lokasi = $request->lokasi;
         $youtube->link = $request->link;
         $youtube->save();
         if($youtube){
@@ -98,6 +109,15 @@ class YoutubeController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $id = HashHelper::decryptData($id);
+        if (!$id) {
+            return redirect()->back()->with('error', 'Gagal Haus youtube');
+        }
+        $delete = Youtube::where('id',$id)->delete();
+        if($delete){
+            return redirect()->route('youtube.index')->with('success', 'Berhasil Menghapus youtube');
+        }else{
+            return redirect()->route('youtube.index')->with('error', 'Gagal Menambahkan youtube');
+        }
     }
 }

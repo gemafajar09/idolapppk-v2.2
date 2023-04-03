@@ -7,13 +7,14 @@
                     <div class="card recent-sales overflow-auto">
                         <div class="card-body">
                             <h5 class="card-title">Data Youtube</h5>
-                            {{-- <a href="{{ route('kontak.create') }}" class="btn btn-outline-success btn-sm mb-2">Tambah
-                                Kontak</a> --}}
+                            <a href="{{ route('youtube.create') }}" class="btn btn-outline-success btn-sm mb-2">Tambah
+                                Video</a>
                             <table class="table table-borderless datatable">
                                 <thead>
                                     <tr>
                                         <th scope="col">No</th>
                                         <th scope="col">Link</th>
+                                        <th scope="col">Lokasi</th>
                                         <th scope="col">Action</th>
                                     </tr>
                                 </thead>
@@ -21,8 +22,9 @@
                                     @foreach ($youtube as $key => $item)
                                         <tr>
                                             <th scope="row">{{ $key + 1 }}</th>
-                                            
+
                                             <td>{{ $item->link }}</td>
+                                            <td>{{ $item->lokasi }}</td>
 
                                             <td>
                                                 <div class="d-grid gap-2 col-6">
@@ -31,7 +33,9 @@
                                                     @endphp
                                                     <a href="{{ route('youtube.edit', $id_youtube) }}"
                                                         class="btn btn-outline-primary btn-sm btn-block">Edit</a>
-                                                    
+                                                    <button type="button"
+                                                        class="btn btn-outline-danger btn-sm btn-block"
+                                                        onclick="tampil('{{ route('youtube.destroy', $id_youtube) }}')">Delete</button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -49,8 +53,7 @@
 
     </div>
 
-    <div class="modal fade" id="updateStatusUser" tabindex="-1" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="updateStatusUser" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">

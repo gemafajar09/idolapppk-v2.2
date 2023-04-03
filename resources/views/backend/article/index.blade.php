@@ -13,10 +13,10 @@
                                 <thead>
                                     <tr>
                                         <th scope="col">No</th>
-                                        <th scope="col">Judul</th>
                                         <th scope="col">Foto Artikel</th>
-                                        <th scope="col">Isi artikel</th>
-                                        <th scope="col">Tipe Artikel</th>
+                                        <th scope="col">Judul</th>
+                                        <th scope="col">Tag</th>
+                                        <th scope="col">Direkomendasikan?</th>
                                         <th scope="col">Action</th>
                                     </tr>
                                 </thead>
@@ -24,12 +24,32 @@
                                     @foreach ($artikels as $key => $item)
                                         <tr>
                                             <th scope="row">{{ $key + 1 }}</th>
+                                            <td><img src='{{ asset("foto/$item->foto") }}' alt=""
+                                                    style="width: 100px;"></td>
                                             <td>
                                                 {{ $item->judul }}
                                             </td>
-                                            <td><img src='{{asset("foto/$item->foto")}}' alt="" style="width: 100px;"></td>
-                                            <td>{{ $item->isi }}</td>
-                                            <td>{{ $item->tipe }}</td>
+                                            <td>
+                                                @php
+                                                    $tags = json_decode($item->tags, true) ?? [];
+                                                    $tagss = [];
+                                                    foreach ($tags as $tag) {
+                                                        $index = $artikels_tags->filter(function ($value, $key) use ($tag) {
+                                                            return $value->id == $tag;
+                                                        });
+
+                                                        if (count($index) > 0) {
+                                                            $index = array_keys($index->toArray())[0];
+                                                            $tagss[] = $artikels_tags[$index]['value'];
+                                                        }
+                                                    }
+                                                @endphp
+                                                @foreach ($tagss as $tag)
+                                                    <span
+                                                        class="badge bg-primary">{{ $tag }}</span>
+                                                @endforeach
+                                            </td>
+                                            <td>{{ $item->tipe ? 'YA' : '' }}</td>
 
                                             <td>
                                                 <div class="d-grid gap-2 col-6">
@@ -54,12 +74,32 @@
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card recent-sales overflow-auto">
+                        <div class="card-body">
+                            <h5 class="card-title">Banner Artikel</h5>
+                            <form action="{{ route('artikelBanner') }}" method="POST"
+                                    enctype="multipart/form-data">
+                                    @csrf
+                                    @method('PUT')
+
+                                <div class="form-group mb-2">
+                                    <input type="file" name="foto" id="foto" class="form-control">
+                                </div>
+                                <div class="form-group mb-2">
+                                    <button class="btn btn-outline-success" type="submit">Update</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div><!-- End Left side columns -->
 
     </div>
 
-    <div class="modal fade" id="updateStatusUser" tabindex="-1" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="updateStatusUser" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">

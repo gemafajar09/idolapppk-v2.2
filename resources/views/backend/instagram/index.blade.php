@@ -1,4 +1,4 @@
-<x-template title="instagram">
+<x-template title="Instagram">
     <div class="row">
         <!-- Left side columns -->
         <div class="col-lg-12">
@@ -6,24 +6,52 @@
                 <div class="col-12">
                     <div class="card recent-sales overflow-auto">
                         <div class="card-body">
-                            <h5 class="card-title">Data instagram</h5>
+                            <h5 class="card-title">Data Instagram</h5>
                             <a href="{{ route('instagram.create') }}" class="btn btn-outline-success btn-sm mb-2">Tambah
-                                instagram</a>
-                            <div class="row">
-                                @foreach ($iklans as $no => $iklan)
-                                @php
-                                    $id_iklan = App\Helper\HashHelper::encryptData($iklan->id);
-                                @endphp
-                                <div class="col-md-6 col-xl-4">
-                                    <div style="position: relative;">
-                                        {!! $iklan->embed !!}
-                                        <div style="position: absolute; top: 0; left: 0; padding: 12px; padding-right: 40%; background-color:white;">
-                                            <button type="button" class="btn btn-outline-danger btn-sm btn-block" onclick="tampil('{{ route('instagram.destroy', $id_iklan) }}')">Delete</button>
-                                        </div>
-                                    </div>
-                                </div>
-                                @endforeach
-                            </div>
+                                Instagram</a>
+                            <table class="table table-borderless datatable">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">No</th>
+                                        <th scope="col">Foto</th>
+                                        <th scope="col">Judul</th>
+                                        <th scope="col">Deskripsi</th>
+                                        <th scope="col">Link</th>
+                                        <th scope="col">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($instagram as $key => $item)
+                                        <tr>
+                                            <th scope="row">{{ $key + 1 }}</th>
+                                            <td>
+                                                <img src='{{ asset("foto/$item->foto") }}' alt=""
+                                                    style="width: 100px;">
+                                            </td>
+                                            <td>
+                                                {{ $item->title }}
+                                            </td>
+                                            <td>{{ $item->desk }}</td>
+                                            <td>{{ $item->link }}</td>
+
+                                            <td>
+                                                <div class="d-grid gap-2 col-6">
+                                                    @php
+                                                        $id_instagram = App\Helper\HashHelper::encryptData($item->id);
+                                                    @endphp
+                                                    <a href="{{ route('instagram.edit', $id_instagram) }}"
+                                                        class="btn btn-outline-primary btn-sm btn-block">Edit</a>
+                                                    <button type="button"
+                                                        class="btn btn-outline-danger btn-sm btn-block"
+                                                        onclick="tampil('{{ route('instagram.destroy', $id_instagram) }}')">Delete</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+
+                                </tbody>
+                            </table>
+
                         </div>
 
                     </div>
