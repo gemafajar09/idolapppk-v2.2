@@ -57,7 +57,7 @@ Route::group(
         Route::get('testimoni-admin', [Backtestimoni::class, 'index'])->name('testimoni-admin');
         Route::post('testimoni-simpan', [Backtestimoni::class, 'simpan'])->name('testimoni-simpan');
         Route::delete('testimoni-hapus/{id}', [Backtestimoni::class, 'hapus'])->name('testimoni-hapus');
-        
+
         Route::resource('instagram', InstagramController::class);
         // tryout
         Route::get('tryoutAkbar', [TryoutakbarController::class, 'index'])->name('tryoutAkbar');
@@ -120,6 +120,8 @@ Route::group(
         Route::resource('kategori-paket', KategoriPaketController::class);
         Route::resource('kategori-materi', KategoriMateriController::class);
         Route::resource('artikel', ArtikelController::class);
+        Route::put('artikelBanner', [ArtikelController::class, 'artikelBanner'])->name('artikelBanner');
+
         Route::resource('iklan', IklanController::class);
         Route::resource('youtube', YoutubeController::class);
 
@@ -178,6 +180,7 @@ Route::middleware(['belum_login'])->group(function () {
     Route::post('/reset-password', [BerandaController::class, 'resetPassword'])->name('frontend.reset.password');
     Route::post('/login', [PenggunaController::class, 'loginStore'])->name('frontend.login.store');
     Route::get('/artikel', [BerandaController::class, 'artikel'])->name('frontend.artikel');
+    Route::get('/artikel-tags/{id}', [BerandaController::class, 'artikelTags'])->name('frontend.artikelTags');
     Route::get('/artikel/{slug}', [BerandaController::class, 'detailArtikel'])->name('frontend.detailArtikel');
 });
 

@@ -22,17 +22,32 @@
                                             value="{{ old('foto') }}">
                                     </div>
                                     <div class="form-group mb-2">
+                                        <label for="" class="mb-2">Foto Citation*</label>
+                                        <input type="text" name="foto_cite" id="foto_cite" class="form-control"
+                                            value="{{ old('foto_cite') }}" required>
+                                    </div>
+                                    <div class="form-group mb-2">
+                                        <label for="" class="mb-2">Tag*</label>
+                                        <input type="text" name="tags" onkeyup="lowercase('tags')" id="tags" class="form-control"
+                                            value="{{ old('tag') }}" required>
+                                    </div>
+                                    <script>
+                                        function lowercase(selector) {
+                                            var x = document.getElementById(selector).value;
+                                            document.getElementById(selector).value = x.toLowerCase();
+                                        }
+                                    </script>
+                                    <div class="form-group mb-2">
                                         <label for="" class="mb-2">Isi Artikel*</label>
                                         <!-- TinyMCE Editor -->
                                         <textarea class="tinymce-editor" name="isi">
                                         </textarea><!-- End TinyMCE Editor -->
-
                                     </div>
                                     <div class="form-group mb-2">
                                         <label for="" class="mb-2">Tipe Artikel*</label>
                                         <select name="tipe" id="tipe" class="form-control">
-                                            <option value="artikel">Artikel</option>
-                                            <option value="sedekah">Sedekah</option>
+                                            <option value="1">Direkomendasikan</option>
+                                            <option value="0">Tidak Direkomendasikan</option>
                                         </select>
                                     </div>
                                     <div class="form-group mb-2">

@@ -14,11 +14,22 @@
                                 <form action="{{ route('youtube.update', $id_youtube) }}" method="POST">
                                     @csrf
                                     @method('PUT')
-                                    
+
                                     <div class="form-group mb-2">
                                         <label for="" class="mb-2">Link*</label>
-                                        <input type="text" name="link" id="link" class="form-control" value="{{$youtube->link ?? old('link')}}" >
+                                        <input type="text" name="link" id="link" class="form-control"
+                                            value="{{ $youtube->link ?? old('link') }}">
                                     </div>
+                                    <div class="form-group mb-2">
+                                        <label for="" class="mb-2">Lokasi*</label>
+                                        <select name="lokasi" id="lokasi" class="form-control">
+                                            <option value="beranda">Di Beranda</option>
+                                            <option value="artikel">Di Artikel</option>
+                                        </select>
+                                    </div>
+                                    <script>
+                                        document.getElementById('lokasi').value = '{{ $youtube->lokasi }}'
+                                    </script>
                                     <div class="form-group mb-2">
                                         <button class="btn btn-outline-success" type="submit">Update</button>
                                     </div>

@@ -34,7 +34,7 @@
                                             }
                                         @endphp
 
-                                        <svg xmlns="http://www.w3.org/2000/svg" style="display: none; background-color:#9e6925">
+                                        <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
                                             <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
                                                 <path
                                                     d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
@@ -102,8 +102,8 @@
                                                                     @endphp
                                                                     @foreach ($fasilitas_paket as $fasilitas)
                                                                         <div class="pb-2"><span><i
-                                                                                    class="bi bi-check-lg text-white rounded" style="padding: 0 5px 0 5px; background:#9e6925"></i>
-                                                                            </span> <span style="font-size: .8em; ">{{ $fasilitas->nama_fasilitas ?? '' }}</span>
+                                                                                    class="bi bi-check-lg bg-success text-white rounded" style="padding: 0 5px 0 5px;"></i>
+                                                                            </span> <span style="font-size: .8em;">{{ $fasilitas->nama_fasilitas ?? '' }}</span>
                                                                         </div>
                                                                     @endforeach
                                                                 </td>
@@ -183,7 +183,7 @@
                                                             class="btn btn-danger btn-sm">X</a>
                                                     @endif
                                                 @endif
-                                                <button type="submit" style="background:#9e6925; color:white" class="btn text-green-700">Gunakan Kode</button>
+                                                <button type="submit" class="btn btn-success text-green-700">Gunakan Kode</button>
 
                                             </div>
                                         </form>
@@ -191,7 +191,7 @@
                                         <form action="{{ route('frontend.checkout.proses') }}" method="POST">
                                             @csrf
                                             <div class="flex justify-end">
-                                                <button type="submit" style="background:#9e6925; color:white" class="btn flex gap-2 items-center text-blue-700 btn-block btn-md">
+                                                <button type="submit" class="btn flex gap-2 items-center btn-primary text-blue-700 btn-block btn-md">
                                                     <i class='bx bxs-cart text-2xl' ></i>
                                                     Pembayaran
                                                 </button>
