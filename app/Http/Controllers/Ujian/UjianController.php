@@ -496,9 +496,19 @@ class UjianController extends Controller
 
         $tglUjian = date('Y-m-d');
 
+
+        if($id_paket == 14){
+            $kategoris = ['Tes Kompetensi Teknis'];
+
+        }else{
+            $kategoris = [];
+
+        }
         // ambil semua kategori
         $soalsKategori = DB::table('soals')->where('id_paket', $id_paket)->where('id_fasilitas', $id_fasilitas)->groupBy('kategori')->orderBy('id_soal', 'ASC')->get();
         // $soalsKategori = ['Tes Kompetensi Teknis', 'Tes Manajerial', 'Kemampuan Sosio Kultural', 'Tes Wawancara'];
+
+
         foreach ($soalsKategori as $kateg) {
             $kategoris[] = $kateg->kategori;
         }
@@ -506,7 +516,14 @@ class UjianController extends Controller
         $soalsAllhitung = DB::table('soals')->where('id_paket', $id_paket)->where('id_fasilitas', $id_fasilitas)->where('kategori', $kategoris[0])->count();
 
         // hitung jumlah soal berdasar kategori
-        $soalsKategorihitung = DB::table('soals')->where('id_paket', $id_paket)->where('id_fasilitas', $id_fasilitas)->where('kategori', 'Tes Kompetensi Teknis')->count();
+
+        if($id_paket != 14){
+
+            $soalsKategorihitung = DB::table('soals')->where('id_paket', $id_paket)->where('id_fasilitas', $id_fasilitas)->where('kategori', 'Tes Kompetensi Teknis')->count();
+            $soalDijawab = DB::table('jawabans')->where('id_paket', $id_paket)->where('id_fasilitas', $id_fasilitas)->where('id_ujian', $id_ujian)->where('id_user', $id_user)->where('jawaban', '!=', '')->where('kategori',$kategoris[0])->count();
+
+            // hitung jumlah soal yang dijawab berdasarkan kategori
+        }
 
         // hitung jumlah soal yang dijawab
         $soalDijawab = DB::table('jawabans')->where('id_paket', $id_paket)->where('id_fasilitas', $id_fasilitas)->where('id_ujian', $id_ujian)->where('id_user', $id_user)->where('jawaban', '!=', '')->where('kategori',$kategoris[0])->count();
@@ -516,8 +533,11 @@ class UjianController extends Controller
 
         // ambil total jawaban benar
         $benarjawaban = DB::table('hasilujians')->where('id_ujian', $id_ujian)->where('id_paket', $id_paket)->where('id_user', session('id_pengguna'))->select('bobot_a', 'nilai_a', 'bobot_b', 'nilai_b', 'bobot_c', 'nilai_c', 'bobot_d', 'nilai_d')->first();
-        $kosong = $soalsAllhitung - $soalDijawab;
-        $salah = $soalDijawab - $benarjawaban->nilai_a;
+
+        if($id_paket != 14){
+            $kosong = $soalsAllhitung - $soalDijawab;
+            $salah = $soalDijawab - $benarjawaban->nilai_a;
+        }
 
         $nilai = DB::table('hasilujians')->where('id_ujian', $id_ujian)->where('id_ujian', $id_ujian)->where('id_paket', $id_paket)->where('id_user', session('id_pengguna'))->first();
 
@@ -550,7 +570,13 @@ class UjianController extends Controller
         // ambil semua kategori
         $soalsKategori = DB::table('soals')->where('id_paket', $id_paket)->where('id_fasilitas', $id_fasilitas)->select('kategori')->groupBy('kategori')->orderBy('id_soal', 'ASC')->get();
 
-        // $soalsKategori = ['Tes Kompetensi Teknis', 'Tes Manajerial', 'Kemampuan Sosio Kultural', 'Tes Wawancara'];
+        if($id_paket == 14){
+            $kategoris = ['Tes Kompetensi Teknis'];
+
+        }else{
+            $kategoris = [];
+
+        }
         foreach ($soalsKategori as $kateg) {
             $kategoris[] = $kateg->kategori;
         }

@@ -10,6 +10,7 @@ use App\Models\Pembelian;
 use App\Models\Paket;
 use App\Helper\HashHelper;
 use App\Models\Materi;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ServiceController extends Controller
@@ -25,7 +26,8 @@ class ServiceController extends Controller
             'paket.fasilitas' => function ($query) {
                 $query->where('status', "Aktif");
             }
-        ])->where('id_pengguna', $id_pengguna)->where('status_pembelian', $status)->get();
+        ])->where('id_pengguna', $id_pengguna)->where('status_pembelian', $status)->whereDate('tanggal_aktifasi','>',Carbon::now()->subMonths(6))->get();
+        
         foreach ($detail as $key => $value) {
             $result = $this->calculatePaket($value->masa_aktif, $value->tanggal_aktifasi);
             if ($result !== false) {
@@ -33,6 +35,7 @@ class ServiceController extends Controller
                 $paket[] = $value;
             }
         }
+
         $data['paket'] = $paket;
         return view('user.pages.service.paket-saya', $data);
     }
