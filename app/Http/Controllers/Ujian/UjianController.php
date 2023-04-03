@@ -497,15 +497,15 @@ class UjianController extends Controller
 
         if($id_paket == 14){
             $kategoris = ['Tes Kompetensi Teknis'];
-            
+
         }else{
             $kategoris = [];
-            
+
         }
         // ambil semua kategori
         $soalsKategori = DB::table('soals')->where('id_paket', $id_paket)->where('id_fasilitas', $id_fasilitas)->groupBy('kategori')->orderBy('id_soal', 'ASC')->get();
         // $soalsKategori = ['Tes Kompetensi Teknis', 'Tes Manajerial', 'Kemampuan Sosio Kultural', 'Tes Wawancara'];
-        
+
         foreach ($soalsKategori as $kateg) {
             $kategoris[] = $kateg->kategori;
         }
@@ -514,10 +514,10 @@ class UjianController extends Controller
 
         // hitung jumlah soal berdasar kategori
         if($id_paket != 14){
-            
+
             $soalsKategorihitung = DB::table('soals')->where('id_paket', $id_paket)->where('id_fasilitas', $id_fasilitas)->where('kategori', 'Tes Kompetensi Teknis')->count();
             $soalDijawab = DB::table('jawabans')->where('id_paket', $id_paket)->where('id_fasilitas', $id_fasilitas)->where('id_ujian', $id_ujian)->where('id_user', $id_user)->where('jawaban', '!=', '')->where('kategori',$kategoris[0])->count();
-    
+
             // hitung jumlah soal yang dijawab berdasarkan kategori
         }
         // hitung jumlah soal yang dijawab
@@ -530,7 +530,7 @@ class UjianController extends Controller
             $kosong = $soalsAllhitung - $soalDijawab;
             $salah = $soalDijawab - $benarjawaban->nilai_a;
         }
-        
+
 
         $nilai = DB::table('hasilujians')->where('id_ujian', $id_ujian)->where('id_ujian', $id_ujian)->where('id_paket', $id_paket)->where('id_user', session('id_pengguna'))->first();
 
@@ -566,7 +566,13 @@ class UjianController extends Controller
         // ambil semua kategori
         $soalsKategori = DB::table('soals')->where('id_paket', $id_paket)->where('id_fasilitas', $id_fasilitas)->select('kategori')->groupBy('kategori')->orderBy('id_soal', 'ASC')->get();
 
-        // $soalsKategori = ['Tes Kompetensi Teknis', 'Tes Manajerial', 'Kemampuan Sosio Kultural', 'Tes Wawancara'];
+        if($id_paket == 14){
+            $kategoris = ['Tes Kompetensi Teknis'];
+
+        }else{
+            $kategoris = [];
+
+        }
         foreach ($soalsKategori as $kateg) {
             $kategoris[] = $kateg->kategori;
         }

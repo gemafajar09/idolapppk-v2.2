@@ -15,6 +15,7 @@ use App\Models\Pengguna;
 use App\Models\PersenAfiliasi;
 use App\Models\PembelianDetail;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 use App\Services\Midtrans\CreateSnapTokenService;
 
 class PembelianController extends Controller
@@ -58,7 +59,7 @@ class PembelianController extends Controller
         }
 
         // cek keranjnag pembelian
-        $cekPembelian = DB::table('pembelian_details')->where('id_pengguna', $id_pengguna)->where('id_paket', $id_paket)->where('status_pembelian', 'Berhasil')->first();
+        $cekPembelian = DB::table('pembelian_details')->where('id_pengguna', $id_pengguna)->where('id_paket', $id_paket)->where('status_pembelian', 'Berhasil')->whereDate('tanggal_aktifasi','>',Carbon::now()->subMonths(6))->first();
         // cek keranjang
         $cekKeranjang = DB::table('pembelian_tmps')->where('id_pengguna', $id_pengguna)->where('id_paket', $id_paket)->first();
 
@@ -219,7 +220,7 @@ class PembelianController extends Controller
             $kode_pembelian_hash = HashHelper::encryptData($kode_pembelian);
             $pembeli = DB::table('pembelians')->where('id', $insertPembelian)->first();
             $snapToken = $pembeli->snap_token;
- 
+
             if ($snapToken == null) {
                 $midtrans = new CreateSnapTokenService($pembeli);
                 $snapToken = $midtrans->getSnapToken();
@@ -232,7 +233,7 @@ class PembelianController extends Controller
             return redirect()->route('frontend.billing', [$kode_pembelian_hash,$snapToken])->with('success', 'Terimakasih Sudah Berlangganan, Segera Lakukan Pembayaran Untuk Mengaktifkan Pembelian');
         } catch (\Exception $th) {
             DB::rollBack();
-            // return response()->json(['status' => 500]); 
+            // return response()->json(['status' => 500]);
             dd($th);
             // return back()->with('error', 'Checkout Gagal Dilakukan, Harap Mencoba Lagi Nanti');
         }
