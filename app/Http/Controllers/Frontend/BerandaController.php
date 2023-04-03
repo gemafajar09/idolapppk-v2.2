@@ -13,7 +13,9 @@ use App\Models\PembelianDetail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendMail;
+use App\Models\Artikel;
 use App\Models\Instagram;
+use App\Models\Tag;
 use Hash;
 
 class BerandaController extends Controller
@@ -42,9 +44,9 @@ class BerandaController extends Controller
         $data['paket'] = Paket::with(['fasilitas' => function ($query) {
             $query->where('status', "Aktif");
         }])->where('tipe_paket', 'Umum')->get();
-        $data['youtube'] = Youtube::first();
-        $data['ig'] = Instagram::get();
-        
+        $data['youtube'] = Youtube::where('lokasi', 'beranda')->first();
+        $data['instagram'] = Instagram::get();
+
         $data['testimoni'] = DB::table('testimonial')->paginate(10);
         if (!session()->has('id_pengguna')) {
             return view('frontend.pages.home', $data);
@@ -52,6 +54,18 @@ class BerandaController extends Controller
             return view('user.pages.home', $data);
             // return view('frontend.pages.home_login', $data);
         }
+    }
+
+    public function artikelTags($id)
+    {
+        $data['artikel'] = DB::table('artikels')
+            ->where('tags', 'like', '%' . $id . ',%')
+            ->orWhere('tags', 'like', '%,' . $id . '%')
+            ->get();
+
+        $data['tag'] = Tag::where('id', $id)->first();
+        $data['tags'] = Tag::orderByDesc('view')->limit(50)->get();
+        return view('frontend.pages.artikelTags', $data);
     }
 
     public function register($referal = null)
@@ -69,7 +83,11 @@ class BerandaController extends Controller
     public function artikel()
     {
         $data['artikel'] = DB::table('artikels')->get();
-        
+        $data['berita_populer'] = DB::table('artikels')->orderByDesc('view')->limit(4)->get();
+        $data['breaking_news'] = DB::table('artikels')->orderByDesc('id')->limit(2)->get();
+        $data['tags'] = DB::table('artikels_tags')->limit(15)->orderBy('view','desc')->get();
+        $data['rekomendasi'] = DB::table('artikels')->where('tipe', '1')->orderByDesc('id')->limit(4)->get();
+        $data['video'] = DB::table('youtubes')->where('lokasi', 'artikel')->orderByDesc('id')->limit(2)->get();
         $data['artikelx'] = DB::table('artikels')->orderBy('id','DESC')->limit(1)->first();
         return view('frontend.pages.artikel', $data);
     }
@@ -77,7 +95,17 @@ class BerandaController extends Controller
     public function detailArtikel($slug)
     {
         $data['artikel'] = DB::table('artikels')->where('slug', $slug)->first();
-        $data['artikelseluruh'] = DB::table('artikels')->get();
+
+        // update viewer artikel dan tag
+        Artikel::where('slug', $slug)->increment('view');
+
+        foreach (json_decode($data['artikel']->tags, true) ?? [] as $tag) {
+            Tag::where('id', $tag)->increment('view');
+        }
+        $data['tags_all'] = Tag::orderByDesc('view')->limit(50)->get();
+        $data['artikels_tags'] = Tag::get();
+        $data['berita_populer'] = DB::table('artikels')->orderByDesc('view')->limit(4)->get();
+        $data['artikelseluruh'] = DB::table('artikels')->where('tipe', '1')->orderByDesc('created_at')->limit(4)->get();
         return view('frontend.pages.detail_artikel', $data);
     }
 

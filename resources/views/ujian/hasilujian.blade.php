@@ -14,7 +14,6 @@
     {{-- @dd($jawabanbenar) --}}
     <div class="row mx-2" style="margin-bottom:10%">
         {{-- teksin --}}
-        @if($id_paket != 14)
         <div class="col-md-6 py-1">
             <div class="card" style="border-radius:15px">
                 <div class="card-body">
@@ -51,7 +50,6 @@
                 </div>
             </div>
         </div>
-        @endif
         {{-- manajer --}}
         @php
             $bobot2 = explode(',', $grafik['manajer']);
@@ -193,10 +191,7 @@
             </div>
         </div>
     </div>
-    
-    
-    
-@if($id_paket != 14)
+
     <script>
         // teknis
         const ctx = document.getElementById('teknis').getContext('2d');
@@ -223,9 +218,7 @@
                 }
             }
         });
-</script>
-@endif
-<script>
+
         // manajer
         const ctx0 = document.getElementById('manajer').getContext('2d');
         new Chart(ctx0, {

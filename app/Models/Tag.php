@@ -5,14 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Instagram extends Model
+class Tag extends Model
 {
     use HasFactory;
 
+    protected $table = 'artikels_tags';
+
     protected $fillable = [
-        'title',
-        'foto',
-        'desk',
-        'link'
+        'value',
+        'view'
     ];
 }

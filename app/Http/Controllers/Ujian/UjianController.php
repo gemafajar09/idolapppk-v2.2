@@ -491,9 +491,11 @@ class UjianController extends Controller
     public function grafikujian($id_ujian, $id_fasilitas, $id_paket)
     {
         $id_user = session('id_pengguna');
+        $kategoris = [];
         $data['no'] = 0;
 
         $tglUjian = date('Y-m-d');
+
 
         if($id_paket == 14){
             $kategoris = ['Tes Kompetensi Teknis'];
@@ -506,6 +508,7 @@ class UjianController extends Controller
         $soalsKategori = DB::table('soals')->where('id_paket', $id_paket)->where('id_fasilitas', $id_fasilitas)->groupBy('kategori')->orderBy('id_soal', 'ASC')->get();
         // $soalsKategori = ['Tes Kompetensi Teknis', 'Tes Manajerial', 'Kemampuan Sosio Kultural', 'Tes Wawancara'];
 
+
         foreach ($soalsKategori as $kateg) {
             $kategoris[] = $kateg->kategori;
         }
@@ -513,6 +516,7 @@ class UjianController extends Controller
         $soalsAllhitung = DB::table('soals')->where('id_paket', $id_paket)->where('id_fasilitas', $id_fasilitas)->where('kategori', $kategoris[0])->count();
 
         // hitung jumlah soal berdasar kategori
+
         if($id_paket != 14){
 
             $soalsKategorihitung = DB::table('soals')->where('id_paket', $id_paket)->where('id_fasilitas', $id_fasilitas)->where('kategori', 'Tes Kompetensi Teknis')->count();
@@ -520,17 +524,20 @@ class UjianController extends Controller
 
             // hitung jumlah soal yang dijawab berdasarkan kategori
         }
-        // hitung jumlah soal yang dijawab
-            $soalDijawabKategori = DB::table('jawabans')->where('id_paket', $id_paket)->where('id_fasilitas', $id_fasilitas)->where('id_ujian', $id_ujian)->where('id_user', $id_user)->where('jawaban', '!=', '')->where('kategori', $kategoris[0])->count();
 
+        // hitung jumlah soal yang dijawab
+        $soalDijawab = DB::table('jawabans')->where('id_paket', $id_paket)->where('id_fasilitas', $id_fasilitas)->where('id_ujian', $id_ujian)->where('id_user', $id_user)->where('jawaban', '!=', '')->where('kategori',$kategoris[0])->count();
+
+        // hitung jumlah soal yang dijawab berdasarkan kategori
+        $soalDijawabKategori = DB::table('jawabans')->where('id_paket', $id_paket)->where('id_fasilitas', $id_fasilitas)->where('id_ujian', $id_ujian)->where('id_user', $id_user)->where('jawaban', '!=', '')->where('kategori', $kategoris[0])->count();
 
         // ambil total jawaban benar
         $benarjawaban = DB::table('hasilujians')->where('id_ujian', $id_ujian)->where('id_paket', $id_paket)->where('id_user', session('id_pengguna'))->select('bobot_a', 'nilai_a', 'bobot_b', 'nilai_b', 'bobot_c', 'nilai_c', 'bobot_d', 'nilai_d')->first();
+
         if($id_paket != 14){
             $kosong = $soalsAllhitung - $soalDijawab;
             $salah = $soalDijawab - $benarjawaban->nilai_a;
         }
-
 
         $nilai = DB::table('hasilujians')->where('id_ujian', $id_ujian)->where('id_ujian', $id_ujian)->where('id_paket', $id_paket)->where('id_user', session('id_pengguna'))->first();
 
@@ -541,12 +548,9 @@ class UjianController extends Controller
         );
 
         $data['grafik'] = $arr;
-        if($id_paket != 14){
-            $data['benar'] = $nilai->nilai_a;
-            $data['kosong'] = $kosong;
-            $data['salah'] = $salah;
-        }
-        $data['id_paket'] = $id_paket;
+        $data['benar'] = $nilai->nilai_a;
+        $data['kosong'] = $kosong;
+        $data['salah'] = $salah;
         $data['kategori'] = $kategoris;
         $data['jawabanbenar'] = $benarjawaban;
         return view('ujian/hasilujian', $data);

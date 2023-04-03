@@ -20,23 +20,14 @@ class ServiceController extends Controller
         $id_pengguna = session('id_pengguna');
         $status = "Berhasil";
         $paket = [];
+
         $detail = PembelianDetail::with([
             'paket.kategori',
             'paket.fasilitas' => function ($query) {
                 $query->where('status', "Aktif");
             }
         ])->where('id_pengguna', $id_pengguna)->where('status_pembelian', $status)->whereDate('tanggal_aktifasi','>',Carbon::now()->subMonths(6))->get();
-
-        $cekaktifasi = DB::table('pembelian_details')->where('id_pengguna',$id_pengguna)->get();
-        foreach($cekaktifasi as $a){
-            $sisa_waktu = strtotime('+6 months', strtotime($a->tanggal_aktifasi));
-            if($sisa_waktu < date('Y-m-d')){
-                DB::table('pembelians')->where('kode_pembelian',$a->kode_pembelian)->delete();
-                DB::table('pembelian_details')->where('id',$a->id)->delete();
-            }
-        }
-
-
+        
         foreach ($detail as $key => $value) {
             $result = $this->calculatePaket($value->masa_aktif, $value->tanggal_aktifasi);
             if ($result !== false) {
@@ -238,7 +229,7 @@ class ServiceController extends Controller
                 ->join('pakets', 'pakets.id', 'hasilujians.id_paket')
                 ->join('fasilitas', 'fasilitas.id', 'hasilujians.id_fasilitas')
                 // ->select(DB::raw('(hasilujians.bobot_a + hasilujians.bobot_b + hasilujians.bobot_c + hasilujians.bobot_d) as skor'), 'hasilujians.bobot_a', 'hasilujians.bobot_b', 'hasilujians.bobot_c', 'hasilujians.bobot_d', 'penggunas.nama')->orderBy('skor', 'DESC')
-                ->select(DB::raw('(hasilujians.bobot_a + hasilujians.bobot_b + hasilujians.bobot_c + hasilujians.bobot_d) as skor'), 'hasilujians.bobot_a', 'hasilujians.bobot_b', 'hasilujians.bobot_c', 'hasilujians.bobot_d', 'penggunas.nama')->orderBy('skor', 'DESC')
+                ->select(DB::raw('(hasilujians.bobot_b + hasilujians.bobot_c + hasilujians.bobot_d) as skor'), 'hasilujians.bobot_a', 'hasilujians.bobot_b', 'hasilujians.bobot_c', 'hasilujians.bobot_d', 'penggunas.nama')->orderBy('skor', 'DESC')
                 ->get();
         }
 

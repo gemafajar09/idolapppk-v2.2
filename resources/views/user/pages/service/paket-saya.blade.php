@@ -47,11 +47,8 @@
                                         'id_paket' => $item->id_paket,
                                         'id_detail' => $item->id,
                                     ];
-                                    
                                     $pakets = App\Helper\HashHelper::encryptArray($data);
                                     $id_paket = $item->id_paket;
-                                    
-                                    $masaaktif = date('Y-m-d', strtotime('+6 months', strtotime($item->tanggal_aktifasi)));
                                 @endphp
                                 @if(isset($item->paket->kategori->type))
                                 <div class="col-lg-4 col-md-6 mt-3 paket {{ $item->paket->kategori->type }}">
@@ -63,7 +60,7 @@
                                             <p class="card-text m-0">{{ $item->paket->deskripsi_paket ?? '' }}</p>
                                             <div>
                                                 <div class="text-xs">Berlaku Hingga:</div>
-                                                <div>{{ App\Helper\HashHelper::tanggal_indonesia($masaaktif) }}</div>
+                                                <div>{{ App\Helper\HashHelper::tanggal_indonesia($item->tanggal_aktifasi) }}</div>
                                             </div>
                                         </div>
                                         <div class="card-body py-0">

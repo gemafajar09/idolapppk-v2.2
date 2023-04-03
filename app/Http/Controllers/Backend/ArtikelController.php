@@ -7,12 +7,14 @@ use Illuminate\Http\Request;
 use App\Models\Artikel;
 use Illuminate\Support\Facades\Storage;
 use App\Helper\HashHelper;
+use App\Models\Tag;
 use Illuminate\Support\Str;
 class ArtikelController extends Controller
 {
     public function index()
     {
         $data['artikels'] = Artikel::get();
+        $data['artikels_tags'] = Tag::get();
         return view('backend.article.index',$data);
     }
 
@@ -32,13 +34,32 @@ class ArtikelController extends Controller
         $foto = $request->file('foto');
         $filename = time(). "." . $foto->getClientOriginalExtension();
         $foto->move('foto/artikel/', $filename);
-        $insert = Artikel::insert([
-            "judul"=>$request->judul,
+
+        $tags = explode(",",$request->tags);
+
+        foreach ($tags as $key => $value) {
+            if (strlen(trim($value)) == 0) continue;
+
+            $tag = Tag::where('value', trim($value))->first();
+            if (!$tag) {
+                $tag = Tag::create([
+                    'value' => trim($value),
+                    'view' => 0
+                ]);
+            }
+            $tag_id[] = $tag->id;
+        }
+
+        $insert = Artikel::create([
+            "judul"=> $request->judul,
             "foto"=> "artikel/".$filename,
-            "isi"=>$request->isi,
-            "tipe"=>$request->tipe,
-            "slug"=>Str::slug($request->judul, '-')
+            "tags"=> json_encode($tag_id),
+            "foto_cite"=> $request->foto_cite,
+            "isi"=> $request->isi,
+            "tipe"=> $request->tipe,
+            "slug"=> Str::slug($request->judul, '-')
         ]);
+
         if($insert){
             return redirect()->route('artikel.index')->with('success', 'Berhasil Menambahkan artikel');
         }else{
@@ -70,6 +91,7 @@ class ArtikelController extends Controller
             return redirect()->back()->with('error', 'Gagal Edit Artikel');
         }
         $data['artikel'] = Artikel::find($id);
+        $data['artikels_tags'] = Tag::get();
         return view('backend.article.edit',$data);
     }
 
@@ -88,6 +110,21 @@ class ArtikelController extends Controller
         }
         $artikel = Artikel::find($id);
         $artikel->judul = $request->judul;
+
+        $tags = explode(",",$request->tags);
+
+        foreach ($tags as $key => $value) {
+            if (strlen(trim($value)) == 0) continue;
+            $tag = Tag::where('value', trim($value))->first();
+            if (!$tag) {
+                $tag = Tag::create([
+                    'value' => trim($value),
+                    'view' => 0
+                ]);
+            }
+            $tag_id[] = $tag->id;
+        }
+
         $artikel->slug = Str::slug($request->judul, '-');
         if (isset($request->foto)){
             $foto = $request->file('foto');
@@ -95,7 +132,9 @@ class ArtikelController extends Controller
             $foto->move('foto/artikel/', $filename);
             $artikel->foto = "artikel/".$filename;$filename;
         }
+        $artikel->tags = json_encode($tag_id);
         $artikel->isi = $request->isi;
+        $artikel->foto_cite = $request->foto_cite;
         $artikel->tipe = $request->tipe;
         $artikel->save();
         if($artikel){
@@ -123,5 +162,25 @@ class ArtikelController extends Controller
         }else{
             return redirect()->route('artikel.index')->with('error', 'Gagal Menghapus Artikel');
         }
+    }
+
+    public function artikelBanner(Request $request)
+    {
+        $files = scandir('foto/banner/');
+
+        if (isset($request->foto)){
+            $foto = $request->file('foto');
+            $filename = time(). "." . $foto->getClientOriginalExtension();
+            $foto->move('foto/banner/', $filename);
+
+            for ($i=2; $i < count($files); $i++) {
+                unlink('foto/banner/'.$files[$i]);
+            }
+
+            return redirect()->route('artikel.index')->with('success', 'Berhasil mengubah banner artikel');
+        }
+
+
+        return redirect()->route('artikel.index')->with('error', 'Gagal mengubah banner artikel');
     }
 }
